@@ -167,9 +167,9 @@ function isOptionInstanceOperatorCallExpression(node: ts.Node, typeChecker: ts.T
   }
   // fn(): k. Checks if k is an observable. Required to distinguish between
   // array operators with same name as RxJs operators.
-  if (!returnsOption(node, typeChecker)) {
-    return false;
-  }
+  // if (!returnsOption(node, typeChecker)) {
+  //   return false;
+  // }
   return true;
 }
 /**

@@ -32,7 +32,8 @@ interface RxJSImport {
   importStatements: ts.ImportDeclaration[];
 }
 
-const RXJS_IMPORTS = 'fp-ts/lib/Option';
+const OPTION_IMPORTS = 'fp-ts/lib/Option';
+const PIPEABLE_IMPORTS = 'fp-ts/lib/pipeable';
 
 function walk(ctx: Lint.WalkContext<void>) {
   const allRxjsImports = new Map<string, RxJSImport>();
@@ -54,7 +55,7 @@ function walk(ctx: Lint.WalkContext<void>) {
       continue;
     }
     const moduleSpecifier = statement.moduleSpecifier.text;
-    if (!moduleSpecifier.startsWith(RXJS_IMPORTS)) {
+    if (!moduleSpecifier.startsWith(OPTION_IMPORTS) && !moduleSpecifier.startsWith(PIPEABLE_IMPORTS)) {
       continue;
     }
     const existingImport = allRxjsImports.get(moduleSpecifier);
@@ -72,6 +73,10 @@ function walk(ctx: Lint.WalkContext<void>) {
       existingImport.importStatements.push(statement);
     }
   }
+
+  // TODO: dedupe pipe
+  // existingImport.namedImports = existingImport.namedImports.split(', ')
+  
   // For every import path if there are more than one import statement collapse
   // them.
   const entries = allRxjsImports.entries();

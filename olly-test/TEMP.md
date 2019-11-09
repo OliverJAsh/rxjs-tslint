@@ -18,8 +18,9 @@ undefined -> never
 - - [x] `Option.of` -> `fromNullable`
 - - [x] `Option.some` -> `some`
 - - [x] `Option.none()` -> `none()` and then manual fix afterwards (?)
-- [x] Collapse imports
+- [x] Collapse imports `Option` and `pipeable`
 - [ ] `none()` -> `none` (manual fix?)
-- [ ] forEach (manual fix?)
+- [x] forEach (manual fix?)
+- [ ] De-duplicate named imports (manual fix?)
 - [ ] Remove unused old import (manual fix?)
 - [ ] Named imports -> namespace imports (`O`) (manual fix?)
