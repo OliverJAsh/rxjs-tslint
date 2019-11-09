@@ -25,4 +25,4 @@ undefined -> never
 - [ ] De-duplicate named imports (manual fix?)
 - [ ] Remove unused old import (manual fix?)
 - [ ] Named imports -> namespace imports (`O`) (manual fix?)
-- [ ] Renamed `Option`
+- [ ] Support `FunfixOption` (manual fix by ditching rename before applying fix?)
