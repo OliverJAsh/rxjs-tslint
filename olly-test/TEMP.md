@@ -14,11 +14,12 @@ undefined -> never
 
 - [x] Methods to pipeable operators with imports
 - [x] `foo.pipe(...xs)` -> `pipeWith(foo, ...xs)`
-- [ ] Creators (with imports)
-- - [ ] `Option.of` -> `fromNullable`
-- - [ ] `Option.some` -> `some`
-- - [ ] `Option.none()` -> `none` OR `Option.none()` -> `none()` and then manual fix afterwards (?)
+- [x] Creators (with imports)
+- - [x] `Option.of` -> `fromNullable`
+- - [x] `Option.some` -> `some`
+- - [x] `Option.none()` -> `none()` and then manual fix afterwards (?)
 - [x] Collapse imports
+- [ ] `none()` -> `none` (manual fix?)
 - [ ] forEach (manual fix?)
-- [ ] Remove unused old import
-- [ ] Named imports -> namespace imports (`O`)
+- [ ] Remove unused old import (manual fix?)
+- [ ] Named imports -> namespace imports (`O`) (manual fix?)
