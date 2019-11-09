@@ -1,6 +1,6 @@
 import { Option } from "funfix-core";
 
-const z = Option.of(1);
+const z: Option<number> = Option.of(1);
 const foo = Option.of(1);
 
 const subs = foo
