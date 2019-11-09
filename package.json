@@ -62,6 +62,7 @@
   },
   "dependencies": {
     "chalk": "^2.4.0",
+    "funfix-core": "^7.0.1",
     "optimist": "^0.6.1",
     "rxjs": "5",
     "tslint": "^5.9.1",
