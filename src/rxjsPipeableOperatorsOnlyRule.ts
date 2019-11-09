@@ -326,6 +326,7 @@ const OPERATORS = new Set([
   'orElseL',
   'isEmpty',
   'nonEmpty',
+  'equals',
 
   // TODO:
   'forEach'
