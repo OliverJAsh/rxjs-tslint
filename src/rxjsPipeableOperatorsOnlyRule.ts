@@ -99,13 +99,21 @@ export class Rule extends Lint.Rules.TypedRule {
       const failureStart = immediateParent.getStart(sourceFile) + immediateParent.getText(sourceFile).lastIndexOf('.');
       const lastNode = findLastObservableExpression(preceedingNode, typeChecker);
       const failureEnd = lastNode.getEnd();
-      const pipeReplacement = Lint.Replacement.appendText(preceedingNode.getEnd(), '.pipe(');
+      const pipeReplacement = Lint.Replacement.appendText(preceedingNode.getStart(), 'pipe(');
+      const pipeCommaReplacement = Lint.Replacement.appendText(preceedingNode.getEnd(), ',');
       const operatorsToImport = new Set<string>();
       const operatorReplacements = replaceWithPipeableOperators(preceedingNode, lastNode, operatorsToImport);
       const operatorsToAdd = subtractSets(operatorsToImport, rxjsOperatorImports);
       const importReplacements = createImportReplacements(operatorsToAdd, insertionStart);
+      const pipeImportReplacement = Lint.Replacement.appendText(insertionStart, `\nimport { pipe } from 'fp-ts/lib/pipeable';\n`)
       rxjsOperatorImports = concatSets(rxjsOperatorImports, operatorsToAdd);
-      const allReplacements = [pipeReplacement, ...operatorReplacements, ...importReplacements];
+      const allReplacements = [
+        pipeReplacement,
+        pipeCommaReplacement,
+        ...operatorReplacements,
+        ...importReplacements,
+        pipeImportReplacement
+      ];
       ctx.addFailure(failureStart, failureEnd, Rule.FAILURE_STRING, allReplacements);
       return ts.forEachChild(node, checkPatchableOperatorUsage);
     }
@@ -206,7 +214,7 @@ function findImportedRxjsOperators(sourceFile: ts.SourceFile): Set<string> {
  */
 function createImportReplacements(operatorsToAdd: Set<string>, startIndex: number): Lint.Replacement[] {
   return [...Array.from(operatorsToAdd.values())].map(operator =>
-    Lint.Replacement.appendText(startIndex, `\nimport {${operator}} from 'rxjs/operators/${operator}';\n`)
+    Lint.Replacement.appendText(startIndex, `\nimport {${operator}} from 'fp-ts/lib/Option';\n`)
   );
 }
 

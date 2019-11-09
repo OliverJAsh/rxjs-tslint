@@ -32,7 +32,7 @@ interface RxJSImport {
   importStatements: ts.ImportDeclaration[];
 }
 
-const RXJS_IMPORTS = 'rxjs';
+const RXJS_IMPORTS = 'fp-ts/lib/Option';
 
 function walk(ctx: Lint.WalkContext<void>) {
   const allRxjsImports = new Map<string, RxJSImport>();

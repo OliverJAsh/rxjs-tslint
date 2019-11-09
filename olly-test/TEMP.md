@@ -10,3 +10,10 @@ run multiple times:
 Workaround Funfix type error, cannot enable flag due to other errors
 https://github.com/funfix/funfix/issues/122
 undefined -> never
+
+
+- [x] Methods to pipeable operators with imports
+- [x] `foo.pipe(...xs)` -> `pipeWith(foo, ...xs)`
+- [ ] Creator: `Option.of` -> `some` (with import)
+- [x] Collapse imports
+- [ ] forEach
