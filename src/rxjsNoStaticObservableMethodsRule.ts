@@ -145,7 +145,8 @@ function createImportReplacements(operatorsToAdd: Set<OperatorWithAlias>, startI
 const OPERATORS = new Set([
   'of',
   'some',
-  'none'
+  'none',
+  'map2'
 ]);
 
 // Not handling NEVER and EMPTY

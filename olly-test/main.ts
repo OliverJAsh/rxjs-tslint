@@ -9,3 +9,8 @@ const subs = foo
   .forEach(x => {
     console.log(x);
   });
+
+const r = foo
+  .map(x => 2 * x)
+  .chain(y => z)
+  .getOrElse(1);

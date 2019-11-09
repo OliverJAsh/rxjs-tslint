@@ -312,6 +312,21 @@ function replaceWithPipeableOperators(
 const OPERATORS = new Set([
   'map',
   'chain',
+
+  'get',
+  'filter',
+  'fold',
+  'exists',
+  'forAll',
+  'getOrElse',
+  'getOrElseL',
+  'orNull',
+  'orUndefined',
+  'orElse',
+  'orElseL',
+  'isEmpty',
+  'nonEmpty',
+
   // TODO:
   'forEach'
 ]);
@@ -320,11 +335,12 @@ const OPERATORS = new Set([
  * changed due to conflict with JavaScript keyword restrictions.
  */
 const PIPEABLE_OPERATOR_MAPPING: { [key: string]: string } = {
-  let: '',
-  do: 'tap',
-  catch: 'catchError',
-  flatMap: 'mergeMap',
-  flatMapTo: 'mergeMapTo',
-  finally: 'finalize',
-  switch: 'switchAll'
+  'getOrElse': 'getOrElseValue',
+  'getOrElseL': 'getOrElse',
+  'orNull': 'toNullable',
+  'orUndefined': 'toUndefined',
+  'orElse': 'alt',
+  'orElseL': 'alt',
+  'isEmpty': 'isNone',
+  'nonEmpty': 'isSome',
 };
