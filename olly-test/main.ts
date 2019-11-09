@@ -1,7 +1,7 @@
-import { Option } from "funfix-core";
+import { Option as FunfixOption } from "funfix-core";
 
-const z: Option<number> = Option.of(1);
-const foo = Option.of(1);
+const z: FunfixOption<number> = FunfixOption.of(1);
+const foo = FunfixOption.of(1);
 
 const subs = foo
   .map(x => 2 * x)
