@@ -32,6 +32,12 @@ export class Rule extends Lint.Rules.TypedRule {
       Array.from(findImportedRxjsOperators(sourceFile)).map(o => OPERATOR_WITH_ALIAS_MAP[o])
     );
 
+    // Make sure the type is imported
+    const hasOptionImport = Array.from(findImportedRxjsOperators(sourceFile)).find(x => x === 'Option') !== undefined;
+    if (hasOptionImport === false) {
+      ctx.addFailure(0, 0, Rule.OBSERVABLE_FAILURE_STRING, createImportReplacements(new Set([{ operator: 'Option' }]), insertionStart));
+    }
+
     function checkPatchableOperatorUsage(node: ts.Node) {
       if (!isRxjsStaticOperatorCallExpression(node, typeChecker)) {
         return ts.forEachChild(node, checkPatchableOperatorUsage);

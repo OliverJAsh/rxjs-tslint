@@ -19,8 +19,9 @@ undefined -> never
 - - [x] `Option.some` -> `some`
 - - [x] `Option.none()` -> `none()` and then manual fix afterwards (?)
 - [x] Collapse imports `Option` and `pipeable`
-- [ ] `none()` -> `none` (manual fix?)
 - [x] forEach (manual fix?)
+- [ ] `none()` -> `none` (manual fix?)
+- [x] Type annotations, `Option` must be imported
 - [ ] De-duplicate named imports (manual fix?)
 - [ ] Remove unused old import (manual fix?)
 - [ ] Named imports -> namespace imports (`O`) (manual fix?)
