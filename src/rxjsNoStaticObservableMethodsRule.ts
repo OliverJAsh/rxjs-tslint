@@ -119,7 +119,7 @@ function findImportedRxjsOperators(sourceFile: ts.SourceFile): Set<string> {
       if (!decl.importClause) {
         return current;
       }
-      if (!decl.moduleSpecifier.getText().startsWith(`'fp-ts/lib/Option'`)) {
+      if (!decl.moduleSpecifier.getText().startsWith(`'shared/facades/option'`)) {
         return current;
       }
       if (!decl.importClause.namedBindings) {
@@ -141,7 +141,7 @@ function findImportedRxjsOperators(sourceFile: ts.SourceFile): Set<string> {
 
 function createImportReplacements(operatorsToAdd: Set<OperatorWithAlias>, startIndex: number): Lint.Replacement[] {
   return [...Array.from(operatorsToAdd.values())].map(tuple =>
-    Lint.Replacement.appendText(startIndex, `\nimport {${tuple.operator}} from 'fp-ts/lib/Option';\n`)
+    Lint.Replacement.appendText(startIndex, `\nimport {${tuple.operator}} from 'shared/facades/option';\n`)
   );
 }
 

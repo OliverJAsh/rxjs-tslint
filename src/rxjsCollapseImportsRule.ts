@@ -32,8 +32,8 @@ interface RxJSImport {
   importStatements: ts.ImportDeclaration[];
 }
 
-const OPTION_IMPORTS = 'fp-ts/lib/Option';
-const PIPEABLE_IMPORTS = 'fp-ts/lib/pipeable';
+const OPTION_IMPORTS = 'shared/facades/option';
+const PIPEABLE_IMPORTS = 'pipe-ts';
 
 function walk(ctx: Lint.WalkContext<void>) {
   const allRxjsImports = new Map<string, RxJSImport>();
