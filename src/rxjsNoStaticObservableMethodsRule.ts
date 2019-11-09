@@ -1,7 +1,7 @@
 import * as Lint from 'tslint';
 import * as tsutils from 'tsutils';
 import * as ts from 'typescript';
-import { subtractSets, concatSets, isObservable, returnsObservable, computeInsertionIndexForImports } from './utils';
+import { subtractSets, concatSets, isOption, returnsOption, computeInsertionIndexForImports } from './utils';
 
 /**
  * A typed TSLint rule that inspects observable
@@ -101,7 +101,7 @@ function isRxjsStaticOperatorCallExpression(node: ts.Node, typeChecker: ts.TypeC
   }
   // fn(): k. Checks if k is an observable. Required to distinguish between
   // array operators with same name as RxJs operators.
-  if (!returnsObservable(node, typeChecker)) {
+  if (!returnsOption(node, typeChecker)) {
     return false;
   }
   return true;

@@ -4,7 +4,7 @@
 import * as Lint from 'tslint';
 import * as tsutils from 'tsutils';
 import * as ts from 'typescript';
-import { subtractSets, concatSets, isObservable, returnsObservable, computeInsertionIndexForImports } from './utils';
+import { subtractSets, concatSets, isOption, returnsOption, computeInsertionIndexForImports } from './utils';
 /**
  * A typed TSLint rule that inspects observable chains using patched RxJs
  * operators and turns them into a pipeable operator chain.
@@ -71,7 +71,7 @@ export class Rule extends Lint.Rules.TypedRule {
       // If not, then verify that the parent is indeed an observable.
       // files the node with the expression 'foo'.
       // Using the example above, the traversal would stop at 'foo'.
-      if (!isRxjsInstanceOperatorCallExpression(node, typeChecker)) {
+      if (!isOptionInstanceOperatorCallExpression(node, typeChecker)) {
         return ts.forEachChild(node, checkPatchableOperatorUsage);
       }
       const immediateParent = (node as ts.CallExpression).expression as ts.PropertyAccessExpression;
@@ -81,7 +81,7 @@ export class Rule extends Lint.Rules.TypedRule {
       // text foo.do(console.log).
       const preceedingNode = immediateParent.expression;
       // If the preceeding node is also an RxJS call then continue traversal.
-      if (isRxjsInstanceOperatorCallExpression(preceedingNode, typeChecker)) {
+      if (isOptionInstanceOperatorCallExpression(preceedingNode, typeChecker)) {
         return ts.forEachChild(node, checkPatchableOperatorUsage);
       }
       // Some Rxjs operators have same names as array operators, and could be
@@ -90,10 +90,10 @@ export class Rule extends Lint.Rules.TypedRule {
       // eg.functionReturningArray().reduce(functionProducingObservable)
       // or arrayObject.reduce(functionProducingObservable)
       if (tsutils.isCallExpression(preceedingNode) || tsutils.isNewExpression(preceedingNode)) {
-        if (!returnsObservable(preceedingNode, typeChecker)) {
+        if (!returnsOption(preceedingNode, typeChecker)) {
           return ts.forEachChild(node, checkPatchableOperatorUsage);
         }
-      } else if (!isObservable(typeChecker.getTypeAtLocation(preceedingNode), typeChecker)) {
+      } else if (!isOption(typeChecker.getTypeAtLocation(preceedingNode), typeChecker)) {
         return ts.forEachChild(node, checkPatchableOperatorUsage);
       }
       const failureStart = immediateParent.getStart(sourceFile) + immediateParent.getText(sourceFile).lastIndexOf('.');
@@ -137,14 +137,14 @@ export class Rule extends Lint.Rules.TypedRule {
  * Returns true if the identifier of the current expression is an RxJS instance
  * operator like map, switchMap etc.
  */
-function isRxjsInstanceOperator(node: ts.PropertyAccessExpression) {
-  return 'Observable' !== node.expression.getText() && RXJS_OPERATORS.has(node.name.getText());
+function isOptionInstanceOperator(node: ts.PropertyAccessExpression) {
+  return 'Option' !== node.expression.getText() && OPERATORS.has(node.name.getText());
 }
 /**
  * Returns true if {@link node} is a call expression containing an RxJs instance
  * operator and returns an observable. eg map(fn), switchMap(fn)
  */
-function isRxjsInstanceOperatorCallExpression(node: ts.Node, typeChecker: ts.TypeChecker) {
+function isOptionInstanceOperatorCallExpression(node: ts.Node, typeChecker: ts.TypeChecker) {
   // Expression is of the form fn()
   if (!tsutils.isCallExpression(node)) {
     return false;
@@ -154,12 +154,12 @@ function isRxjsInstanceOperatorCallExpression(node: ts.Node, typeChecker: ts.Typ
     return false;
   }
   // fn is one of RxJs instance operators
-  if (!isRxjsInstanceOperator(node.expression)) {
+  if (!isOptionInstanceOperator(node.expression)) {
     return false;
   }
   // fn(): k. Checks if k is an observable. Required to distinguish between
   // array operators with same name as RxJs operators.
-  if (!returnsObservable(node, typeChecker)) {
+  if (!returnsOption(node, typeChecker)) {
     return false;
   }
   return true;
@@ -241,7 +241,7 @@ function isAncestorRxjsOperatorCall(node: ts.Node, typeChecker: ts.TypeChecker):
   if (!node.parent.parent) {
     return false;
   }
-  return isRxjsInstanceOperatorCallExpression(node.parent.parent, typeChecker);
+  return isOptionInstanceOperatorCallExpression(node.parent.parent, typeChecker);
 }
 /**
  * Recursively generates {@link Lint.Replacement} to convert a chained rxjs call
@@ -301,115 +301,11 @@ function replaceWithPipeableOperators(
  * operator migration. Source:(RxJS v5)
  * https://github.com/ReactiveX/rxjs/tree/stable/src/operators
  */
-const RXJS_OPERATORS = new Set([
-  'audit',
-  'auditTime',
-  'buffer',
-  'bufferCount',
-  'bufferTime',
-  'bufferToggle',
-  'bufferWhen',
-  'catchError',
-  'combineAll',
-  'combineLatest',
-  'concat',
-  'concatAll',
-  'concatMap',
-  'concatMapTo',
-  'count',
-  'debounce',
-  'debounceTime',
-  'defaultIfEmpty',
-  'delay',
-  'delayWhen',
-  'dematerialize',
-  'distinct',
-  'distinctUntilChanged',
-  'distinctUntilKeyChanged',
-  'elementAt',
-  'every',
-  'exhaust',
-  'exhaustMap',
-  'expand',
-  'filter',
-  'finalize',
-  'find',
-  'findIndex',
-  'first',
-  'groupBy',
-  'ignoreElements',
-  'isEmpty',
-  'last',
+const OPERATORS = new Set([
   'map',
-  'mapTo',
-  'materialize',
-  'max',
-  'merge',
-  'mergeAll',
-  'mergeMap',
-  'mergeMapTo',
-  'mergeScan',
-  'min',
-  'multicast',
-  'observeOn',
-  'onErrorResumeNext',
-  'pairwise',
-  'partition',
-  'pluck',
-  'publish',
-  'publishBehavior',
-  'publishLast',
-  'publishReplay',
-  'race',
-  'reduce',
-  'refCount',
-  'repeat',
-  'repeatWhen',
-  'retry',
-  'retryWhen',
-  'sample',
-  'sampleTime',
-  'scan',
-  'sequenceEqual',
-  'share',
-  'shareReplay',
-  'single',
-  'skip',
-  'skipLast',
-  'skipUntil',
-  'skipWhile',
-  'startWith',
-  'subscribeOn',
-  'switchAll',
-  'switchMap',
-  'switchMapTo',
-  'take',
-  'takeLast',
-  'takeUntil',
-  'takeWhile',
-  'tap',
-  'throttle',
-  'throttleTime',
-  'timeInterval',
-  'timeout',
-  'timeoutWith',
-  'timestamp',
-  'toArray',
-  'window',
-  'windowCount',
-  'windowTime',
-  'windowToggle',
-  'windowWhen',
-  'withLatestFrom',
-  'zip',
-  'zipAll',
-  'do',
-  'catch',
-  'flatMap',
-  'flatMapTo',
-  'finally',
-  'switch',
-  'let'
+  'chain',
+  // TODO:
+  'forEach'
 ]);
 /**
  * Represents the mapping for pipeable version of some operators whose name has

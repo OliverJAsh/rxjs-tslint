@@ -17,29 +17,29 @@ export function concatSets<T>(set1: Set<T>, set2: Set<T>): Set<T> {
 }
 
 /**
- * Returns true if the {@link type} is an Observable or one of its sub-classes.
+ * Returns true if the {@link type} is an Option or one of its sub-classes.
  */
-export function isObservable(type: ts.Type, tc: ts.TypeChecker): boolean {
+export function isOption(type: ts.Type, tc: ts.TypeChecker): boolean {
   if (tsutils.isTypeReference(type)) {
     type = type.target;
   }
-  if (type.symbol !== undefined && type.symbol.name === 'Observable') {
+  if (type.symbol !== undefined && type.symbol.name === 'Option') {
     return true;
   }
   if (tsutils.isUnionOrIntersectionType(type)) {
-    return type.types.some(t => isObservable(t, tc));
+    return type.types.some(t => isOption(t, tc));
   }
   const bases = type.getBaseTypes();
-  return bases !== undefined && bases.some(t => isObservable(t, tc));
+  return bases !== undefined && bases.some(t => isOption(t, tc));
 }
 
-export function returnsObservable(node: ts.CallLikeExpression, tc: ts.TypeChecker) {
+export function returnsOption(node: ts.CallLikeExpression, tc: ts.TypeChecker) {
   const signature = tc.getResolvedSignature(node);
   if (signature === undefined) {
     return false;
   }
   const returnType = tc.getReturnTypeOfSignature(signature);
-  return isObservable(returnType, tc);
+  return isOption(returnType, tc);
 }
 
 /**
