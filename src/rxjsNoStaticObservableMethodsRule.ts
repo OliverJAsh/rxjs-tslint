@@ -55,7 +55,7 @@ export class Rule extends Lint.Rules.TypedRule {
         start,
         end,
         Rule.OBSERVABLE_FAILURE_STRING,
-        [Lint.Replacement.replaceFromTo(start, end, operatorAlias(operatorName))].concat(imports)
+        [Lint.Replacement.replaceFromTo(start, end, operatorName)].concat(imports)
       );
       return ts.forEachChild(node, checkPatchableOperatorUsage);
     }
@@ -83,7 +83,7 @@ export class Rule extends Lint.Rules.TypedRule {
 }
 
 function isRxjsStaticOperator(node: ts.PropertyAccessExpression) {
-  return 'Observable' === node.expression.getText() && RXJS_OPERATORS.has(node.name.getText());
+  return 'Option' === node.expression.getText() && OPERATORS.has(node.name.getText());
 }
 
 function isRxjsStaticOperatorCallExpression(node: ts.Node, typeChecker: ts.TypeChecker) {
@@ -113,7 +113,7 @@ function findImportedRxjsOperators(sourceFile: ts.SourceFile): Set<string> {
       if (!decl.importClause) {
         return current;
       }
-      if (!decl.moduleSpecifier.getText().startsWith(`'rxjs'`)) {
+      if (!decl.moduleSpecifier.getText().startsWith(`'fp-ts/lib/Option'`)) {
         return current;
       }
       if (!decl.importClause.namedBindings) {
@@ -133,62 +133,33 @@ function findImportedRxjsOperators(sourceFile: ts.SourceFile): Set<string> {
   );
 }
 
-function operatorAlias(operator: string) {
-  return 'observable' + operator[0].toUpperCase() + operator.substring(1, operator.length);
-}
-
 function createImportReplacements(operatorsToAdd: Set<OperatorWithAlias>, startIndex: number): Lint.Replacement[] {
   return [...Array.from(operatorsToAdd.values())].map(tuple =>
-    Lint.Replacement.appendText(startIndex, `\nimport {${tuple.operator} as ${tuple.alias}} from 'rxjs';\n`)
+    Lint.Replacement.appendText(startIndex, `\nimport {${tuple.operator}} from 'fp-ts/lib/Option';\n`)
   );
 }
 
 /*
  * https://github.com/ReactiveX/rxjs/tree/master/compat/add/observable
  */
-const RXJS_OPERATORS = new Set([
-  'bindCallback',
-  'bindNodeCallback',
-  'combineLatest',
-  'concat',
-  'defer',
-  'empty',
-  'forkJoin',
-  'from',
-  'fromEvent',
-  'fromEventPattern',
-  'fromPromise',
-  'generate',
-  'if',
-  'interval',
-  'merge',
-  'never',
+const OPERATORS = new Set([
   'of',
-  'onErrorResumeNext',
-  'pairs',
-  'rase',
-  'range',
-  'throw',
-  'timer',
-  'using',
-  'zip'
+  'some',
+  'none'
 ]);
 
 // Not handling NEVER and EMPTY
 const OPERATOR_RENAMES: { [key: string]: string } = {
-  throw: 'throwError',
-  if: 'iif',
-  fromPromise: 'from'
+  of: 'fromNullable',
 };
 
-type OperatorWithAlias = { operator: string; alias: string };
+type OperatorWithAlias = { operator: string; };
 type OperatorWithAliasMap = { [key: string]: OperatorWithAlias };
 
-const OPERATOR_WITH_ALIAS_MAP: OperatorWithAliasMap = Array.from(RXJS_OPERATORS).reduce((a, o) => {
+const OPERATOR_WITH_ALIAS_MAP: OperatorWithAliasMap = Array.from(OPERATORS).reduce((a, o) => {
   const operatorName = OPERATOR_RENAMES[o] || o;
   a[operatorName] = {
     operator: operatorName,
-    alias: operatorAlias(operatorName)
   };
   return a;
 }, {});
